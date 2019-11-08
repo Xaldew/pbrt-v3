@@ -1,0 +1,146 @@
+#
+# Copyright (c) 2019-2023, ARM Limited. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+
+
+Scale -1 1 1
+LookAt 0 60 180  0 60 0  0 1 0
+Camera "perspective" "float fov" [52]
+Sampler "lowdiscrepancy" "integer pixelsamples" [4]
+PixelFilter "box"
+Film "image" "integer xresolution" [800] "integer yresolution" [800]
+Integrator "sppm"
+           "integer maxdepth" 15
+           "integer iterations" 50
+           "integer imagewritefrequency" 5
+           "float radius" 1
+Accelerator "bvh"
+
+
+WorldBegin
+
+AttributeBegin
+    # LightSource "point" "point from" [0 118.5 0] "color I" [4000 4000 4000]
+AttributeEnd
+
+AttributeBegin
+    AreaLightSource "particle"
+                    "float velocity" 0.8
+                    "integer nparticles" 1
+    Translate 59.5 60 0
+    Rotate -90 0 1 0
+    Rotate 90 0 0 1
+    Shape "disk" "float radius" 10
+AttributeEnd
+
+AttributeBegin
+    Material "glass"
+             "color Kr" [0.0 0.0 0.0]
+             "color Kt" [0.75 0.75 0.75]
+             "float eta" [1.328]
+    Translate 49 60 0
+    Scale 10 10 10
+    Shape "sphere"
+AttributeEnd
+
+
+MakeNamedMaterial "red"
+                  "string type" ["matte"]
+                  "color Kd" [0.5 0.5 0.5]
+MakeNamedMaterial "blue"
+                  "string type" ["matte"]
+                  "color Kd" [0.5 0.5 0.5]
+MakeNamedMaterial "white"
+                  "string type" ["matte"]
+                  "color Kd" [0.7 0.7 0.7]
+MakeNamedMaterial "ball0"
+                  "string type" ["metal"]
+MakeNamedMaterial "ball1"
+                  "string type" ["glass"]
+                  "color Kr" [0.0 0.0 0.0]
+                  "color Kt" [0.75 0.75 0.75]
+                  "float eta" [1.5]
+
+# Ground
+AttributeBegin
+    NamedMaterial "white"
+    Scale 150 150 150
+    Include "plane.pbrt"
+AttributeEnd
+
+# Side1
+AttributeBegin
+    NamedMaterial "red"
+    Translate -60 60 0
+    Rotate  90 0 0 1
+    Rotate 180 1 0 0
+    Scale 150 150 150
+    Include "plane.pbrt"
+AttributeEnd
+
+# Side2
+AttributeBegin
+    NamedMaterial "blue"
+    Translate 60 60 0
+    Rotate 90 0 0 1
+    Scale 150 150 150
+    Include "plane.pbrt"
+AttributeEnd
+
+# Side3
+AttributeBegin
+    NamedMaterial "white"
+    Translate 0 60 -60
+    Rotate 90 1 0 0
+    Scale 150 150 150
+    Include "plane.pbrt"
+AttributeEnd
+
+# Roof
+AttributeBegin
+    NamedMaterial "white"
+    Translate 0 120 0
+    Rotate 180 1 0 0
+    Scale 150 150 150
+    Include "plane.pbrt"
+AttributeEnd
+
+# Ball0
+AttributeBegin
+    NamedMaterial "ball0"
+    Translate 23.5 16.5 31.0
+    Scale 16.5 16.5 16.5
+    Shape "sphere"
+AttributeEnd
+
+# Ball1
+AttributeBegin
+    NamedMaterial "ball1"
+    Translate -22.5 16.5 0.0
+    Scale 16.5 16.5 16.5
+    Shape "sphere"
+AttributeEnd
+
+WorldEnd
