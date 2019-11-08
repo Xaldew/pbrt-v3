@@ -51,8 +51,11 @@ public:
                     int nParticles,
                     Float velocity,
                     Float range,
+                    Float cherenkov_scale,
+                    Float uniform_scale,
                     bool randomize,
-                    int seed);
+                    int seed,
+                    Float ambient_ior);
 
     virtual ~ParticleEmitter() noexcept;
 
@@ -92,6 +95,9 @@ protected:
     std::vector<Particle> particles;
     std::vector<std::vector<Vector3f>> intervals; /**< Superluminal locations. */
     std::vector<std::vector<Spectrum>> ft_spectra; /**< Spectra for the interval. */
+    const Float cherenkov_scale;
+    const Float uniform_scale;
+    const Float ambient_eta;
     const Float area;
     Float particle_length; /**< Total particle lengths. */
     Float superluminal_length; /**< Total superluminal length. */

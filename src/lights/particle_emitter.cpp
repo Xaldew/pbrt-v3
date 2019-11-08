@@ -45,6 +45,8 @@
 namespace pbrt
 {
 
+const Float Eta_air = 1.000293;
+
 
 ParticleEmitter::ParticleEmitter(const Transform &LightToWorld,
                                  const MediumInterface &mediumInterface,
@@ -53,11 +55,17 @@ ParticleEmitter::ParticleEmitter(const Transform &LightToWorld,
                                  int nParticles,
                                  Float velocity,
                                  Float range,
+                                 Float cherenkov_scale,
+                                 Float uniform_scale,
                                  bool randomize,
-                                 int seed)
+                                 int seed,
+                                 Float ambient_eta)
     : AreaLight(LightToWorld, mediumInterface, nSamples),
       shape(shape),
-      area(shape->Area())
+      cherenkov_scale(cherenkov_scale),
+      uniform_scale(uniform_scale),
+      area(shape->Area()),
+      ambient_eta(ambient_eta)
 {
     // Sample the shape and create new particles at each such location.
     RNG rng(seed);
@@ -91,7 +99,6 @@ void ParticleEmitter::Preprocess(const Scene &scene)
 {
     MemoryArena arena;
     // Note: All surfaces are assumed to be closed.
-    const Float n_air = 1.00002;
     Float sl_length = 0.f;
     Float tot_length = 0.f;
     for (size_t i = 0; i < particles.size(); ++i)
@@ -101,7 +108,7 @@ void ParticleEmitter::Preprocess(const Scene &scene)
         SurfaceInteraction si;
         const auto &p = particles[i];
         RayDifferential r(p.r);
-        Float n = n_air;               // Starting IoR: Air.
+        Float n = ambient_eta;         // Starting refractive_index.
         Float t = 0.;                  // Previous interval start parameter.
         Point3f start(p.r.o);          // Previous interval start point.
         const Primitive *lp = nullptr; // Last primitive hit.
@@ -112,7 +119,7 @@ void ParticleEmitter::Preprocess(const Scene &scene)
             if (p.v > 1. / n)
             {
                 ints.emplace_back(t, t + nt, n);
-                ft.push_back(Frank_Tamm(1000.f, p.v, n));
+                ft.push_back(Frank_Tamm(cherenkov_scale, p.v, n));
                 sl_length += nt;
             }
             si.ComputeScatteringFunctions(r, arena);
@@ -126,7 +133,7 @@ void ParticleEmitter::Preprocess(const Scene &scene)
             // Exiting the primitive, reset IoR to scene IoR.
             if (si.primitive == lp)
             {
-                n = n_air;
+                n = ambient_eta;
                 lp = nullptr;
             }
             else if (si.bsdf)
@@ -267,6 +274,7 @@ Spectrum ParticleEmitter::Sample_Le(const Point2f &u1, const Point2f &u2,
             Vector3f w = UniformSampleSphere(u2);
             *nLight = (Normal3f)w;
             *ray = Ray(pp, w, Infinity, time, mediumInterface.inside);
+            s = Spectrum(uniform_scale);
         }
 
         // Compute the PDFs using a mixture model based on the probability of
@@ -344,11 +352,18 @@ CreateParticleEmitter(
     int nParticles = paramSet.FindOneInt("nparticles", 1);
     Float velocity = paramSet.FindOneFloat("velocity", 0.8);
     Float range = paramSet.FindOneFloat("range", 50.);
+    Float cherenkov_scale = paramSet.FindOneFloat("cherenkovscale", 1000.f);
+    Float uniform_scale = paramSet.FindOneFloat("uniformscale", 50.f);
     bool randomize = paramSet.FindOneBool("randomize", false);
     int seed = paramSet.FindOneInt("seed", 0);
+    Float ambient_eta = paramSet.FindOneFloat("ambienteta", Eta_air);
     return std::make_shared<ParticleEmitter>(light2world, medium, nSamples, shape,
                                              nParticles, velocity, range,
-                                             randomize, seed);
+                                             cherenkov_scale,
+                                             uniform_scale,
+                                             randomize,
+                                             seed,
+                                             ambient_eta);
 }
 
 
