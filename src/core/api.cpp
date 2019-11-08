@@ -60,6 +60,7 @@
 #include "integrators/sppm.h"
 #include "integrators/volpath.h"
 #include "integrators/whitted.h"
+#include "lights/particle_emitter.h"
 #include "lights/diffuse.h"
 #include "lights/distant.h"
 #include "lights/goniometric.h"
@@ -759,10 +760,21 @@ std::shared_ptr<AreaLight> MakeAreaLight(const std::string &name,
                                          const std::shared_ptr<Shape> &shape) {
     std::shared_ptr<AreaLight> area;
     if (name == "area" || name == "diffuse")
+    {
         area = CreateDiffuseAreaLight(light2world, mediumInterface.outside,
                                       paramSet, shape);
+    }
+    else if (name == "particle")
+    {
+        area = CreateParticleEmitter(light2world,
+                                     mediumInterface.outside,
+                                     paramSet,
+                                     shape);
+    }
     else
+    {
         Warning("Area light \"%s\" unknown.", name.c_str());
+    }
     paramSet.ReportUnused();
     return area;
 }
