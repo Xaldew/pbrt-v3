@@ -101,10 +101,11 @@ void ParticleEmitter::Preprocess(const Scene &scene)
     // Note: All surfaces are assumed to be closed.
     Float sl_length = 0.f;
     Float tot_length = 0.f;
+    std::vector<std::vector<std::vector<Float>>> ft_vals;
     for (size_t i = 0; i < particles.size(); ++i)
     {
         std::vector<Vector3f> ints;
-        std::vector<Spectrum> ft;
+        std::vector<std::vector<Float>> ft;
         SurfaceInteraction si;
         const auto &p = particles[i];
         RayDifferential r(p.r);
@@ -119,7 +120,7 @@ void ParticleEmitter::Preprocess(const Scene &scene)
             if (p.v > 1. / n)
             {
                 ints.emplace_back(t, t + nt, n);
-                ft.push_back(Frank_Tamm(cherenkov_scale, p.v, n));
+                ft.push_back(Frank_Tamm(p.v, n));
                 sl_length += nt;
             }
             si.ComputeScatteringFunctions(r, arena);
@@ -146,10 +147,40 @@ void ParticleEmitter::Preprocess(const Scene &scene)
         {
             std::cout << "SL interval: " << ints[j] << std::endl;
         }
-        ft_spectra.push_back(ft);
+        ft_vals.push_back(ft);
         intervals.push_back(ints);
         tot_length += p.r.tMax;
     }
+
+    // Normalize the spectras based on the largest one.
+    Float normc = 0.0;
+    for (auto &ft : ft_vals)
+    {
+        for (auto &s : ft)
+        {
+            for (auto &v : s)
+            {
+                normc = std::max(normc, v);
+            }
+        }
+    }
+
+    CHECK_NE(normc, 0.0);
+
+    for (auto &ft : ft_vals)
+    {
+        std::vector<Spectrum> ints;
+        for (auto &s : ft)
+        {
+            for (auto &v : s)
+            {
+                v = cherenkov_scale * (v / normc);
+            }
+            ints.push_back(Spectrum::FromSampled(CIE_lambda, s.data(), nCIESamples));
+        }
+        ft_spectra.push_back(ints);
+    }
+
     particle_length = tot_length;
     superluminal_length = sl_length;
     Prob_sl = sl_length / tot_length;
@@ -320,24 +351,18 @@ Vector3f ParticleEmitter::CherenkovDirection(
 }
 
 
-Spectrum ParticleEmitter::Frank_Tamm(Float scale, Float v, Float n) const
+std::vector<Float> ParticleEmitter::Frank_Tamm(Float v, Float n) const
 {
     // Compute the Frank-Tamm spectrum, and normalize the samples based on the
     // largest (i.e., the first) sample.
-    Float lambda[nCIESamples];
-    Float vals[nCIESamples];
-    const Float a = 0.0072973525693;
-    const Float wbeg = CIE_lambda[0] * 1e-9;
-    const Float nc = 2 * Pi * a * (1 - (1 / (v * v * n * n))) * (1 / (wbeg * wbeg));
+    std::vector<Float> vals(nCIESamples);
     for (size_t i = 0; i < nCIESamples; ++i)
     {
-        Float w = CIE_lambda[i] * 1e-9;
+        const Float a = 0.0072973525693;
+        const Float w = CIE_lambda[i] * 1e-9;
         vals[i] = 2 * Pi * a * (1 - (1 / (v * v * n * n))) * (1 / (w * w));
-        vals[i] /= nc;
-        vals[i] *= scale;
-        lambda[i] = CIE_lambda[i];
     }
-    return Spectrum::FromSampled(lambda, vals, nCIESamples);
+    return vals;
 }
 
 

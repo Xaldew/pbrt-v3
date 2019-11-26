@@ -88,7 +88,7 @@ protected:
     Vector3f CherenkovDirection(const Vector3f &d, const Point2f &u, Float v, Float n) const;
 
     /** @brief Compute the Frank-Tamm spectrum for a particle. */
-    Spectrum Frank_Tamm(Float scale, Float v, Float n) const;
+    std::vector<Float> Frank_Tamm(Float v, Float n) const;
 
 protected:
     std::shared_ptr<Shape> shape;
