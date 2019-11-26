@@ -1,0 +1,217 @@
+#
+# Copyright (c) 2019-2023, ARM Limited. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+#
+
+
+Film "image"
+"integer xresolution" [800]
+"integer yresolution" [800]
+"string filename" "cornell-ri.exr"
+
+Sampler "halton" "integer pixelsamples" [100]
+Integrator "sppm"
+           "integer maxdepth" 15
+           "integer iterations" 1000000
+           "integer imagewritefrequency" 2
+           "float radius" 1
+
+Scale -1 1 1 #avoid the 'flipped image' bug..
+LookAt	0.0 -180.0 60.0
+	0.0 -179.0 60.0
+	0.0 0.0 1.0
+
+Camera "perspective"
+       "float fov" [52]
+
+WorldBegin
+
+    MakeNamedMaterial "diffuse" "string type" "matte" "color Kd" [0.7 0.7 0.7]
+
+    # Box-mesh.
+    AttributeBegin
+        NamedMaterial "diffuse"
+        Transform [1.000000 0.000000 0.000000 0.000000
+                   0.000000 1.000000 0.000000 0.000000
+                   0.000000 0.000000 1.000000 0.000000
+                   0.000000 0.000000 0.000000 1.000000]
+        Shape "trianglemesh"
+              "point P" [
+                  -60.0 -375.0 0.0
+                  60.0 -375.0 0.0
+                  60.0 60.0 0.0
+                  -60.0 -375.0 0.0
+                  60.0 60.0 0.0
+                  -60.0 60.0 0.0
+                  -60.0 60.0 0.0
+                  60.0 60.0 0.0
+                  60.0 60.0 120.0
+                  -60.0 60.0 0.0
+                  60.0 60.0 120.0
+                  -60.0 60.0 120.0
+                  60.0 60.0 0.0
+                  60.0 -375.0 0.0
+                  60.0 -375.0 120.0
+                  60.0 60.0 0.0
+                  60.0 -375.0 120.0
+                  60.0 60.0 120.0
+                  -60.0 -375.0 0.0
+                  -60.0 60.0 0.0
+                  -60.0 60.0 120.0
+                  -60.0 -375.0 0.0
+                  -60.0 60.0 120.0
+                  -60.0 -375.0 120.0
+                  -60.0 60.0 120.0
+                  60.0 60.0 120.0
+                  60.0 -375.0 120.0
+                  -60.0 60.0 120.0
+                  60.0 -375.0 120.0
+                  -60.0 -375.0 120.0
+              ]
+              "normal N" [
+                  0.0 0.0 1.0
+                  0.0 0.0 1.0
+                  0.0 0.0 1.0
+                  0.0 0.0 1.0
+                  0.0 0.0 1.0
+                  0.0 0.0 1.0
+                  0.0 -1.0 0.0
+                  0.0 -1.0 0.0
+                  0.0 -1.0 0.0
+                  0.0 -1.0 0.0
+                  0.0 -1.0 0.0
+                  0.0 -1.0 0.0
+                  -1.0 0.0 0.0
+                  -1.0 0.0 0.0
+                  -1.0 0.0 0.0
+                  -1.0 0.0 0.0
+                  -1.0 0.0 0.0
+                  -1.0 0.0 0.0
+                  1.0 0.0 0.0
+                  1.0 0.0 0.0
+                  1.0 0.0 0.0
+                  1.0 0.0 0.0
+                  1.0 0.0 0.0
+                  1.0 0.0 0.0
+                  0.0 0.0 -1.0
+                  0.0 0.0 -1.0
+                  0.0 0.0 -1.0
+                  0.0 0.0 -1.0
+                  0.0 0.0 -1.0
+                  0.0 0.0 -1.0
+              ]
+              "float st" [
+                  0.0 0.0
+                  1.0 0.0
+                  1.0 1.0
+                  0.0 0.0
+                  1.0 1.0
+                  0.0 1.0
+                  0.0 1.0
+                  1.0 1.0
+                  1.0 1.0
+                  0.0 1.0
+                  1.0 1.0
+                  0.0 1.0
+                  1.0 1.0
+                  1.0 0.0
+                  1.0 0.0
+                  1.0 1.0
+                  1.0 0.0
+                  1.0 1.0
+                  0.0 0.0
+                  0.0 1.0
+                  0.0 1.0
+                  0.0 0.0
+                  0.0 1.0
+                  0.0 0.0
+                  0.0 1.0
+                  1.0 1.0
+                  1.0 0.0
+                  0.0 1.0
+                  1.0 0.0
+                  0.0 0.0
+              ]
+              "integer indices" [
+                  0 1 2
+                  3 4 5
+                  6 7 8
+                  9 10 11
+                  12 13 14
+                  15 16 17
+                  18 19 20
+                  21 22 23
+                  24 25 26
+                  27 28 29
+              ]
+    AttributeEnd
+
+    # Fuel rod cylinder
+    AttributeBegin
+        AreaLightSource "particle"
+                        "float velocity" 0.8
+                        "integer nparticles" 1000
+                        "float cherenkovscale" 5
+                        "float uniformscale" 0.1
+                        "float range" 50
+        Shape "cylinder" "float zmin" 20 "float zmax" 20.1 "float radius" 0.1
+    AttributeEnd
+
+    # Glass cylinder
+    AttributeBegin
+        Translate 30 0 0
+        Material "glass" "color Kt" [0.75 0.75 0.75] "float eta" [1.251]
+        Shape "cylinder" "float zmin" 0.0 "float zmax" 50 "float radius" 4
+    AttributeEnd
+
+    AttributeBegin
+        Rotate 45 0 0 1
+        Translate 30 0 0
+        Material "glass" "color Kt" [0.75 0.75 0.75] "float eta" [1.3]
+        Shape "cylinder" "float zmin" 0.0 "float zmax" 50 "float radius" 4
+    AttributeEnd
+
+    AttributeBegin
+        Rotate 90 0 0 1
+        Translate 30 0 0
+        Material "glass" "color Kt" [0.75 0.75 0.75] "float eta" [1.4]
+        Shape "cylinder" "float zmin" 0.0 "float zmax" 50 "float radius" 4
+    AttributeEnd
+
+    AttributeBegin
+        Rotate 135 0 0 1
+        Translate 30 0 0
+        Material "glass" "color Kt" [0.75 0.75 0.75] "float eta" [1.5]
+        Shape "cylinder" "float zmin" 0.0 "float zmax" 50 "float radius" 4
+    AttributeEnd
+
+    AttributeBegin
+        Rotate 180 0 0 1
+        Translate 30 0 0
+        Material "glass" "color Kt" [0.75 0.75 0.75] "float eta" [1.6]
+        Shape "cylinder" "float zmin" 0.0 "float zmax" 50 "float radius" 4
+    AttributeEnd
+
+WorldEnd

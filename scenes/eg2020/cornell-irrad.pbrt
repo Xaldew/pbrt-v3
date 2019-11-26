@@ -30,10 +30,13 @@ LookAt 0 60 180  0 60 0  0 1 0
 Camera "perspective" "float fov" [52]
 Sampler "lowdiscrepancy" "integer pixelsamples" [4]
 PixelFilter "box"
-Film "image" "integer xresolution" [800] "integer yresolution" [800]
+Film "image"
+     "integer xresolution" [800]
+     "integer yresolution" [800]
+     "string filename" "cornell-cherenkov.exr"
 Integrator "sppm"
            "integer maxdepth" 15
-           "integer iterations" 50
+           "integer iterations" 100000
            "integer imagewritefrequency" 5
            "float radius" 1
 Accelerator "bvh"
