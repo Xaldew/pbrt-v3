@@ -27,8 +27,8 @@
 
 
 Film "image"
-"integer xresolution" [800]
-"integer yresolution" [800]
+"integer xresolution" [1500]
+"integer yresolution" [1500]
 "string filename" "cornell-ri.exr"
 
 Sampler "halton" "integer pixelsamples" [100]
